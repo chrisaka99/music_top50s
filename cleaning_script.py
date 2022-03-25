@@ -12,7 +12,7 @@ try:
     log_filename = get_type_filename('log')
 except:
     print('reading file error')
-os.getcwd()
+print(os.getcwd())
 
 # get the data date from the filename, read the log file then resolve error 2 (see errors list)
 date = get_date_from_filename(log_filename) 
@@ -55,4 +55,4 @@ streams_df.drop(streams_df.loc[streams_df.sng_id.astype(int) <= -1].index, inpla
 
  # we add a date column - the date of received log and save the df to csv
 streams_df['date'] = date
-save_df(streams_df, log_filename)
+save_df(streams_df.drop('user_id', axis=1), log_filename)

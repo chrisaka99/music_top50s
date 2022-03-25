@@ -18,7 +18,7 @@ try:
     date = get_date_from_filename(csv_filename)
 except:
     print('reading file error')
-os.getcwd()
+print(os.getcwd())
 
 # we load the csv file, if there is old records we concat both
 streams_df = read_file(csv_filename)
@@ -28,7 +28,7 @@ if last_streams_df != None:
 
 # convert date column into datetime then keep only records on the last 7 days
 streams_df["date"] = pd.to_datetime(streams_df["date"])
-streams_df = streams_df.set_index('date').last('7D').reset_index()
+streams_df = streams_df.set_index('date').last('7D').reset_index().reindex(columns=['sng_id', 'country', 'date'])
 save_df(streams_df, csv_filename)
 
 # copy saved df to initial directory for upcoming days
