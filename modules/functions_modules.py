@@ -5,8 +5,7 @@ import os
 import re
 import itertools
 import pandas as pd
-import shutil
-import numpy as np
+import shutil # module for copying files
 
 def move_to_the_most_recent_folder():
     """This function get the most recent folder then change the working directory to this folder"""
@@ -20,7 +19,7 @@ def get_type_filename(ext):
     return [_ for _ in os.listdir() if _.endswith('.{}'.format(ext))][0]
 
 def get_date_from_filename(filename):
-    """ """
+    """Based on a regex extract the date from a file"""
     return re.search(r'\d{4}\-\d{2}\-\d{2}', filename).group()
 
 def read_file(file):
