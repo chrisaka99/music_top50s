@@ -59,5 +59,5 @@ streams_df['date'] = date
 # user_stream_df['date'] = date
 
 # save dfs
-save_df(streams_df, ''log_filename)
+save_df(streams_df, log_filename)
 # save_df(user_stream_df, 'user_'+log_filename)
