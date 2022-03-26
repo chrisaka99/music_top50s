@@ -3,14 +3,7 @@ Get Started
 
 To run this file, first clone the repo `git clone https://github.com/kayann99/music_top50s.git`.
 
-Install necessary librairies:
-```
-pip install pandas
-pip install numpy
-pip install shutil
-pip install itertools
-
-```
+Install necessary librairies: `pip install -r requirements.txt`
 
 Then go the clone repo directory `cd music_top50s`. In the directory, run `chmod u+x script.sh` to make script.sh executable.
 Finally run `./script.sh`
@@ -32,6 +25,7 @@ The repository the structure as shown below:
     ├── script.sh                                       # bash file which run both python scripts
     ├── top50s                                          # folder to store top 50 files
     ├── top50_script.py                                 # python script to generate top50 files
+    ├── requirements.txt                                # python necessary librairies
     └── README.md
 
 We are receiving each day in a folder, a text file which contains streamed songs (sample_listen-2021-12-01_2Mlines.log) on the current date.
@@ -65,6 +59,7 @@ After execution we should have this structure:
     ├── script.sh
     ├── top50s                                                                               
     ├── top50_script.py
+    ├── requirements.txt 
     └── README.md
 
 `sample_listen-2021-12-01_2Mlines.csv` is csv file which have sng_id, country and date as columns, used to generate top 50 songs by country
@@ -88,6 +83,7 @@ After execution of the script we should have:
     │   │── country_top50_2021-12-01.txt                    [*]
     │   └── user_top50_2021-12-01.txt                       [*]
     ├── top50_script.py
+    ├── requirements.txt 
     └── README.md                                
 
 `functions_module` contains functions written to make the code modular and more. maintainable. The functions are documented.

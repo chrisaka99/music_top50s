@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # import python libraries
-from json import load
 import os
-import pandas as pd
 from modules.functions_modules import *     # custom functions 
 
 print('top50 files')
