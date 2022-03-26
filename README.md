@@ -96,7 +96,7 @@ How to run it every day to compute the files ?
 
 To automate the running of the scripts, make sure cron is installed `crontab -l` if not, install it `apt-get install cron`.
 
-We supposed we run the cleaning_script each day at 01h00 and top50_script at 01h10. In a terminal type `crontab -e` and add at the end of the file these commands  `0 1 * * * /usr/bin/python3 'full path'/cleaning_script.py >> cleaning.log 2>&1` and `10 1 * * * python3 'full path'/top50_script.py >> top50.log 2>&1` save and close the editor. You're all set.
+Suppose we run the script each day at 01h00. In a terminal type `crontab -e` and add at the end of the file this command  `0 1 * * * /usr/bin/bash 'full path'/script.sh >> script.log 2>&1`, save and close the editor. You're all set.
 
 
 Note: The `main` branch have the version where we consider that we are getting all log in one same folder and `many folders` we are getting each log file in its own folder.
