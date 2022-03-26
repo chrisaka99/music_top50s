@@ -1,22 +1,32 @@
 """custom functions module"""
 
-
 import os
 import re
 import itertools
 import pandas as pd
 import shutil # module for copying files
 
-def move_to_the_most_recent_folder():
-    """This function get the most recent folder then change the working directory to this folder"""
-    os.chdir(os.getcwd())
-    last_created_folder = max([d for d in os.listdir('.') if os.path.isdir(d) and not(d.startswith('.') or d.__contains__('modules'))], key=os.path.getmtime) # get the last created folder name
-    os.chdir(os.path.join(os.getcwd(), last_created_folder))
+def move_to_log_folder(folder='logs'):
+    """This function get the folder where log files are stored ('logs' by default)"""
+    os.chdir(os.path.join(os.getcwd(), folder))
 
+def get_recent_log():
+    """Return the most recent log files. Log we received that day"""
+    lst = [_ for _ in os.listdir() if _.endswith('.{}'.format('log'))]
+    lst.sort()
+    return lst[-1]
 
-def get_type_filename(ext):
-    """Return a filename based on his extension"""
-    return [_ for _ in os.listdir() if _.endswith('.{}'.format(ext))][0]
+def get_last_csv(type):
+    """Return the last_csvs files (filtered to keep the last 7 seven days data) """
+    lst = [_ for _ in os.listdir() if _.endswith('.{}'.format('csv')) and _.startswith('{}_'.format(type))]
+    lst.sort()
+    return lst[0]
+
+def get_recent_csv(type):
+    """Return the csv we just cleaned with the cleaning script"""
+    lst = [_ for _ in os.listdir() if _.endswith('.{}'.format('csv')) and not _.__contains__('last') and _.startswith('{}_'.format(type))]
+    lst.sort()
+    return lst[0]
 
 def get_date_from_filename(filename):
     """Based on a regex extract the date from a file"""
@@ -86,10 +96,57 @@ def transform_list_to_inline_format(l, country):
     ch+='\n'
     return ch
 
-def copy_saved_df_to_initial_dir(old_file, new_directory):
-    """Copies a dataFrame to initial directory"""
-    new_file = shutil.copy(old_file, new_directory)
-    os.rename(new_file, os.path.join(new_directory, 'last_saved_df.csv'))
+def get_last_data(country_file, user_file, last_country_filename, last_users_filename):
+    """ Return if it exists files names of last saved country and user df """
+    if country_file:
+        last_country_filename = get_last_csv('country')
+    if user_file:
+        last_users_filename = get_last_csv('user')
+    return last_country_filename, last_users_filename
 
 
+def keep_last_seven_days_data(data):
+    """Convert date column into datetime then keep the last 7 days data"""
+    data["date"] = pd.to_datetime(data["date"])
+    data = data.set_index('date').last('7D').reset_index().reindex(columns=['sng_id', 'country', 'date'])
 
+
+def load_csv(csv_file, last_df_file):
+    """Load the csv file, if there is old records (last_df) we concatenate both then return them"""
+    data = read_file(csv_file)
+    if last_df_file != None:
+        last_df_file = read_file(last_df_file)
+        data = pd.concat([data, last_df_file])
+    return data
+
+def rename_to_last_df(file):
+    """Rename a file to _last_saved_df"""
+    if file.__contains__('country'):
+        os.rename(file, 'country_last_saved_df.csv')
+    elif file.__contains__('user'):
+        os.rename(file, 'users_last_saved_df.csv')
+
+
+def copy_file_to_special_dir(file):
+    """Copies a dataFrame to special top50s directory"""
+    shutil.copy(file, '../top50s/')
+
+
+def make_top50_files(data, type, date):
+    """ Create txt files and write top 50 songs whether it is for country or users [type]."""
+
+    # we group rows by type and sng_id and count the number of song per countries (streams_count)
+    groupby_df = data.groupby([type, 'sng_id']).agg(streams_count = ('sng_id', len))
+    unique_ = list(data[type].unique()) # get unique list of type
+        # for each countries we get the streams_count then put it in the format country:sng_id:streams_count and add it in a txt file
+    filename = '{}_top50_{}.txt'.format(type, date)
+    for elt in unique_:
+        arr = groupby_df.xs(key=elt).reset_index().sort_values('streams_count', ascending=False).iloc[:50].values.tolist()
+        arr = transform_list_to_inline_format(arr, elt)
+        with open(filename, 'a') as f:
+            f.writelines(arr)
+    
+    print('file created.')
+    copy_file_to_special_dir(filename)
+    # delete create files in the log directory
+    os.remove(filename)
